@@ -1,0 +1,148 @@
+App -- Supplier Evaluation By Price - Based on PO and Invoice Price (F1663A)
+
+Let's focus on purchasing document 4500000124 item 20 as an example to see what is the calculation rules
+
+
+
+Q1: How was Variance Score 95 was calculated?
+
+PO price per OPU: 2.55
+Invoice price per OPU: 1.27
+Price Variance Amount: 1.27-2.55 = -1.28
+Variance %: (1.27-2.55)/2.55 = -50.1 %
+
+Let's see the scoring settings of the price as blow. Since -50.1 % falls in interval  [-20%, -100%], so the Variance Score is 95.
+
+The bigger the negative number, the higher the score because the cost shown as invoice price is low.
+
+
+
+Q2: How score 51.67 on the upper left was calculated?
+
+It is the sum of variance score of the 9 items and divided by 9.
+
+(40+40+40+40+40+40+40+90+95)/9 = 51.67
+App -- Supplier Evaluation By Quantity - Based on Ordered and Received Quantity (F1661A) app
+
+Let's focus on purchasing document 4500000185 item 10 as an example to see what is the calculation rules
+
+
+
+Q1: How was Variance Score 10 was calculated?
+
+
+Ordered Quantity: 6
+Goods Receipt Quantity: 1
+Qty Variance: 1-6= -5
+Variance %: -5/6= -83.3%
+
+Let's see the scoring settings of the quantity as blow. Since -83.3 % falls in interval  [-20%, -100%], so the Variance Score is 10.
+
+The bigger the negative number, the smaller the score because the delivery deficit is large.
+
+
+
+Q2: How score 80 on the upper left was calculated?
+
+It is the sum of variance score of the 9 items and divided by 9.
+
+(10+10+700)/9= 80
+APP -- Supplier Evaluation By Time - Based on Delivery and Goods Re-ceipt Date (F1664A)
+
+Let's focus on purchasing document 4500000185, item 10 as an example to see what is the calculation rule too. But this time it is calculated on schedule line level.
+4500000185 item 10 has 3 schedule lines with scheduled quantity 2 each as shown below: schedule line 2, schedule line 3,schedule line 4 ( only 3 items since schedule line 1 was deleted)
+
+
+Also the date sequence of the schedule line from 2 to 4 is backward which is just for testing. Usually the scheduled date of line 2 should be earlier than schedule line 3.
+
+
+
+
+
+here is the score:
+
+
+
+Q1 how the overdue days -1 was calculated:
+
+statistical delivery date of the purchase order: 03/16/2023
+posting date of first goods receipt: 03/15/2023
+
+posting date of final goods receipt: 03/15/2023
+
+one day early than expected, so the overdue day is
+
+final GR date 03/15/2023 - statistical delivery date 03/16/2023 = -1
+
+Here comes the interesting part, what if I post good receipt twice and 1 quantity each on 04/24/2023 which is today as I am typing, let's see what will happen.
+
+
+
+ 
+
+
+
+We can see the final GR date of schedule line 2 was updated to 04/24/2023. This is due to the first quantity posting on 04/24/2023.
+
+As I have posted another 1 quantity on 04/24/2023, the schedule line item 3 appears in the above report with first and final GR date 04/24/2023. For this item, the overdue date is 04/24/2023- 03/15/2023= 38 days.
+
+However, why the overdue date of schedule line 2 is 19? Make a wild guess, it is 38/2 = 19 since it has scheduled quantity 2. So the overdue date for is the weighted average days shared between total quantities which means (final GR date of the last post- scheduled date) / total received quantity of the schedule line.
+
+Let's focus on the score. The score is actually derived for each GR separately and then it is averaged to get the score at PO item schedule line level.
+
+As long as we have figured out the overdue date, the score can be calculated.
+
+
+
+for schedule line 2,  overdue dates 19 falls in interval  [10, 20], so the Variance Score is 60.
+
+for schedule line 3,  overdue dates 38 falls in interval  [30, 40], so the Variance Score is 20.
+
+Another interesting thing is, the number falls in an interval depend on which number it is more close. The above case 19 is more close to 20, so it has score 60.
+
+overdue day -71 which falls in interval [-60,-100], it takes lower side -60's score because -71 is closer to -60 than to -100.
+
+overdue day 19 which falls in interval [10,20], it takes upper side 20's score because 19 is closer to 20 than to 10.
+
+Again the 40.5 on the upper left side is the average of the 10 items:
+
+(5+5+40+40+40+60+65+65+65+20)/10= 40.5
+APP Supplier Evaluation By Quality - Based on Quality Notification
+
+Let's focus on purchasing document 4500000202, item 10 as an example to see what is the calculation rule.
+
+
+
+Q1 how the qualification notification 80 was calculated:
+
+One Notification 200000030 was created referencing 4500000202 10. So the Number of quality notification = 1.
+
+
+
+According the above settings, 1 falls interval [0,5], it takes 5's score 80 which supprised me as previously stated, it should take the closer side.
+APP Supplier Evaluation by Quality - Inspection lot (F2309A)
+
+This score is calculated by each inspection lot. Once the usage decision has been made on the inspection lot, the inspection lot item will appear below:
+
+
+
+The rule is simple, if the decision is OK, then score 100. If not OK, then score 1.
+APP Parts per Million - By Returns and Quality Notifications (F4885)
+
+The rule is written clearly from the help.
+
+
+Still, let's take one supplier as an example to make you understand well.
+
+Q1 How was PPM value 800K was calculated?
+
+
+
+material document 4900000403 movemement type 122 means it is returned.
+
+Rejected quantity= 20
+
+Total received quantities= 1+4+20= 25
+
+
+PPM value = 20/25 * 1000000 = 0.8*1m = 800K
