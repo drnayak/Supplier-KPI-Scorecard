@@ -1,0 +1,889 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Evaluation KPI System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["var(--font-sans)"],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(210 20% 98%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(221.2 83.2% 53.3%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222.2 84% 4.9%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(210 40% 96%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(221.2 83.2% 53.3%);
+            --radius: 0.75rem;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <!-- @COMPONENT: MainLayout -->
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <!-- @COMPONENT: Sidebar -->
+        <aside class="w-64 bg-card border-r border-border flex flex-col">
+            <div class="p-6 border-b border-border">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-primary-foreground text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold text-lg">Supplier KPI</h1>
+                        <p class="text-sm text-muted-foreground">Evaluation System</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md bg-accent text-accent-foreground font-medium">
+                            <i class="fas fa-tachometer-alt w-4"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-dollar-sign w-4"></i>
+                            Price Evaluation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-boxes w-4"></i>
+                            Quantity Evaluation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-clock w-4"></i>
+                            Delivery Time
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-exclamation-triangle w-4"></i>
+                            Quality Notifications
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-microscope w-4"></i>
+                            Inspection Results
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <i class="fas fa-chart-bar w-4"></i>
+                            Reports
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-border">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-muted-foreground text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium" data-mock="true">John Doe</p>
+                        <p class="text-xs text-muted-foreground" data-mock="true">Procurement Manager</p>
+                    </div>
+                    <button class="text-muted-foreground hover:text-foreground">
+                        <i class="fas fa-cog text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <!-- @COMPONENT: Header -->
+            <header class="bg-card border-b border-border px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold">Supplier Evaluation Dashboard</h2>
+                        <p class="text-muted-foreground">Monitor and evaluate supplier performance across key metrics</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                            <i class="fas fa-download mr-2"></i>
+                            Export Report
+                        </button>
+                        <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>
+                            New Evaluation
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- Dashboard Content -->
+            <div class="p-6 space-y-6">
+                <!-- KPI Overview Cards -->
+                <!-- @COMPONENT: KPICards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-muted-foreground">Price Variance</p>
+                                <p class="text-2xl font-bold text-green-600" data-mock="true">85.2</p>
+                                <p class="text-xs text-muted-foreground">Average Score</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-muted-foreground">Quantity Variance</p>
+                                <p class="text-2xl font-bold text-yellow-600" data-mock="true">72.4</p>
+                                <p class="text-xs text-muted-foreground">Average Score</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-boxes text-yellow-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-yellow-600 h-2 rounded-full" style="width: 72%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-muted-foreground">Delivery Time</p>
+                                <p class="text-2xl font-bold text-blue-600" data-mock="true">68.3</p>
+                                <p class="text-xs text-muted-foreground">Average Score</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: 68%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-muted-foreground">Quality Score</p>
+                                <p class="text-2xl font-bold text-purple-600" data-mock="true">91.7</p>
+                                <p class="text-xs text-muted-foreground">Average Score</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-star text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-muted-foreground">Overall KPI</p>
+                                <p class="text-2xl font-bold text-gray-900" data-mock="true">79.4</p>
+                                <p class="text-xs text-muted-foreground">Weighted Average</p>
+                            </div>
+                            <div class="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-gray-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-gray-600 h-2 rounded-full" style="width: 79%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: KPICards -->
+
+                <!-- Quick Actions and Recent Evaluations -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Quick Evaluation Form -->
+                    <!-- @COMPONENT: QuickEvaluationForm -->
+                    <div class="lg:col-span-2 bg-card rounded-lg border border-border p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold">Quick Price Evaluation</h3>
+                            <button class="text-sm text-primary hover:text-primary/80">View All Forms</button>
+                        </div>
+                        
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Purchase Order Number</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring" placeholder="e.g., 4500000124" data-mock="true">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Supplier Name</label>
+                                    <select class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                        <option data-mock="true">Select Supplier</option>
+                                        <option data-mock="true">ABC Manufacturing Ltd</option>
+                                        <option data-mock="true">XYZ Components Inc</option>
+                                        <option data-mock="true">Global Supply Co</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">PO Price per Unit</label>
+                                    <input type="number" step="0.01" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring" placeholder="2.55" data-mock="true">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Invoice Price per Unit</label>
+                                    <input type="number" step="0.01" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring" placeholder="1.27" data-mock="true">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Quantity</label>
+                                    <input type="number" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring" placeholder="100" data-mock="true">
+                                </div>
+                            </div>
+                            
+                            <!-- Live Calculation Display -->
+                            <div class="bg-muted/50 rounded-lg p-4 mt-4">
+                                <h4 class="font-medium mb-3">Calculation Preview</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-muted-foreground">Variance Amount</p>
+                                        <p class="font-semibold text-green-600" data-mock="true">-$1.28</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-muted-foreground">Variance %</p>
+                                        <p class="font-semibold text-green-600" data-mock="true">-50.1%</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-muted-foreground">Score Range</p>
+                                        <p class="font-semibold" data-mock="true">[-20%, -100%]</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-muted-foreground">Variance Score</p>
+                                        <p class="font-semibold text-2xl text-green-600" data-mock="true">95</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                                    Calculate & Save
+                                </button>
+                                <button type="button" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                                    Reset Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- @END_COMPONENT: QuickEvaluationForm -->
+
+                    <!-- Recent Activity -->
+                    <!-- @COMPONENT: RecentActivity -->
+                    <div class="bg-card rounded-lg border border-border p-6">
+                        <h3 class="text-lg font-semibold mb-4">Recent Evaluations</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-dollar-sign text-green-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium" data-mock="true">Price evaluation for PO-4500000124</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">ABC Manufacturing - Score: 95</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">2 hours ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-yellow-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-boxes text-yellow-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium" data-mock="true">Quantity evaluation for PO-4500000185</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">XYZ Components - Score: 10</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">4 hours ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-clock text-blue-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium" data-mock="true">Delivery time updated</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">Global Supply Co - Score: 60</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">1 day ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-exclamation-triangle text-purple-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium" data-mock="true">Quality notification created</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">ABC Manufacturing - Score: 80</p>
+                                    <p class="text-xs text-muted-foreground" data-mock="true">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 px-4 py-2 text-sm text-primary hover:text-primary/80 border border-border rounded-md hover:bg-accent transition-colors">
+                            View All Activity
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: RecentActivity -->
+                </div>
+
+                <!-- Supplier Performance Table -->
+                <!-- @COMPONENT: SupplierPerformanceTable -->
+                <div class="bg-card rounded-lg border border-border">
+                    <div class="p-6 border-b border-border">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Supplier Performance Overview</h3>
+                            <div class="flex items-center gap-3">
+                                <input type="text" placeholder="Search suppliers..." class="px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                                <select class="px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>All Suppliers</option>
+                                    <option data-mock="true">Top Performers</option>
+                                    <option data-mock="true">Needs Improvement</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-muted/50">
+                                <tr>
+                                    <th class="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Supplier</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Price Score</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Quantity Score</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Delivery Score</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Quality Score</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Overall KPI</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Last Updated</th>
+                                    <th class="text-center px-6 py-3 text-sm font-medium text-muted-foreground">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                <!-- @MAP: suppliers.map(supplier => ( -->
+                                <tr class="hover:bg-muted/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <span class="text-xs font-semibold text-primary" data-mock="true">AM</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium" data-mock="true">ABC Manufacturing Ltd</p>
+                                                <p class="text-xs text-muted-foreground" data-mock="true">Supplier ID: SUP-001</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">95</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 95%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-yellow-600" data-mock="true">72</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-yellow-600 rounded-full" style="width: 72%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-blue-600" data-mock="true">68</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-blue-600 rounded-full" style="width: 68%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-purple-600" data-mock="true">88</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-purple-600 rounded-full" style="width: 88%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-sm font-semibold" data-mock="true">80.8</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-sm text-muted-foreground" data-mock="true">2 hours ago</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button class="text-primary hover:text-primary/80" title="View Details">
+                                                <i class="fas fa-eye text-sm"></i>
+                                            </button>
+                                            <button class="text-muted-foreground hover:text-foreground" title="Edit">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-muted/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <span class="text-xs font-semibold text-primary" data-mock="true">XC</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium" data-mock="true">XYZ Components Inc</p>
+                                                <p class="text-xs text-muted-foreground" data-mock="true">Supplier ID: SUP-002</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">85</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-red-600" data-mock="true">45</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-red-600 rounded-full" style="width: 45%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-yellow-600" data-mock="true">60</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-yellow-600 rounded-full" style="width: 60%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">92</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 92%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="px-2 py-1 bg-yellow-50 text-yellow-700 rounded-full text-sm font-semibold" data-mock="true">70.5</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-sm text-muted-foreground" data-mock="true">4 hours ago</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button class="text-primary hover:text-primary/80" title="View Details">
+                                                <i class="fas fa-eye text-sm"></i>
+                                            </button>
+                                            <button class="text-muted-foreground hover:text-foreground" title="Edit">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-muted/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <span class="text-xs font-semibold text-primary" data-mock="true">GS</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium" data-mock="true">Global Supply Co</p>
+                                                <p class="text-xs text-muted-foreground" data-mock="true">Supplier ID: SUP-003</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-yellow-600" data-mock="true">75</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-yellow-600 rounded-full" style="width: 75%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">88</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 88%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">85</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-semibold text-green-600" data-mock="true">95</span>
+                                            <div class="w-12 h-2 bg-muted rounded-full">
+                                                <div class="h-2 bg-green-600 rounded-full" style="width: 95%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-sm font-semibold" data-mock="true">85.8</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-sm text-muted-foreground" data-mock="true">1 day ago</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button class="text-primary hover:text-primary/80" title="View Details">
+                                                <i class="fas fa-eye text-sm"></i>
+                                            </button>
+                                            <button class="text-muted-foreground hover:text-foreground" title="Edit">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP )) -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="p-6 border-t border-border">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm text-muted-foreground" data-mock="true">Showing 3 of 15 suppliers</p>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 text-sm border border-border rounded hover:bg-accent" disabled>Previous</button>
+                                <button class="px-3 py-1 text-sm bg-primary text-primary-foreground rounded">1</button>
+                                <button class="px-3 py-1 text-sm border border-border rounded hover:bg-accent">2</button>
+                                <button class="px-3 py-1 text-sm border border-border rounded hover:bg-accent">3</button>
+                                <button class="px-3 py-1 text-sm border border-border rounded hover:bg-accent">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: SupplierPerformanceTable -->
+            </div>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: MainLayout -->
+
+    <!-- Modal for Detailed Evaluation Forms -->
+    <!-- @COMPONENT: EvaluationModal -->
+    <div id="evaluationModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-card rounded-lg border border-border w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-border">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">Comprehensive Supplier Evaluation</h3>
+                    <button class="text-muted-foreground hover:text-foreground">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Price Evaluation Section -->
+                    <div class="space-y-6">
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-dollar-sign"></i>
+                                Price Variance Evaluation
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">PO Price</label>
+                                        <input type="number" step="0.01" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="2.55">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Invoice Price</label>
+                                        <input type="number" step="0.01" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="1.27">
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded p-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Variance %:</span>
+                                        <span class="font-semibold text-green-600" data-mock="true">-50.1%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Score:</span>
+                                        <span class="font-bold text-green-600" data-mock="true">95</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality Evaluation Section -->
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-star"></i>
+                                Quality Evaluation
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Quality Notifications</label>
+                                    <input type="number" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Inspection Result</label>
+                                    <select class="w-full px-3 py-2 border border-input rounded text-sm">
+                                        <option>OK</option>
+                                        <option>Not OK</option>
+                                    </select>
+                                </div>
+                                <div class="bg-white rounded p-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Notification Score:</span>
+                                        <span class="font-semibold text-purple-600" data-mock="true">80</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Inspection Score:</span>
+                                        <span class="font-semibold text-purple-600" data-mock="true">100</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity and Time Evaluation Section -->
+                    <div class="space-y-6">
+                        <div class="bg-yellow-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-yellow-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-boxes"></i>
+                                Quantity Variance Evaluation
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Ordered Qty</label>
+                                        <input type="number" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="6">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Received Qty</label>
+                                        <input type="number" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="1">
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded p-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Variance %:</span>
+                                        <span class="font-semibold text-red-600" data-mock="true">-83.3%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Score:</span>
+                                        <span class="font-bold text-red-600" data-mock="true">10</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-clock"></i>
+                                Delivery Time Evaluation
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Scheduled Date</label>
+                                        <input type="date" class="w-full px-3 py-2 border border-input rounded text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Actual Date</label>
+                                        <input type="date" class="w-full px-3 py-2 border border-input rounded text-sm">
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded p-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Overdue Days:</span>
+                                        <span class="font-semibold text-blue-600" data-mock="true">19</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Score:</span>
+                                        <span class="font-bold text-blue-600" data-mock="true">60</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PPM Calculation Section -->
+                <div class="mt-8 bg-gray-50 rounded-lg p-6">
+                    <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-bar"></i>
+                        Parts Per Million (PPM) Calculation
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Rejected Quantity</label>
+                            <input type="number" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="20">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Total Received</label>
+                            <input type="number" class="w-full px-3 py-2 border border-input rounded text-sm" placeholder="25">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">PPM Value</label>
+                            <div class="px-3 py-2 bg-white border border-input rounded text-sm font-semibold text-gray-600" data-mock="true">800K</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex gap-3">
+                    <button class="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                        Save Evaluation
+                    </button>
+                    <button class="px-6 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                        Save & Calculate Another
+                    </button>
+                    <button class="px-6 py-2 border border-border rounded-md hover:bg-accent transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: EvaluationModal -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Encapsulated JavaScript for UI interactions
+            
+            // Form calculation preview functionality
+            const priceInputs = document.querySelectorAll('input[type="number"]');
+            
+            function updateCalculations() {
+                // This would implement the SAP scoring algorithm
+                // For demo purposes, showing static values
+                console.log('Updating calculations...');
+            }
+            
+            // Event listeners for form interactions
+            priceInputs.forEach(input => {
+                input.addEventListener('input', updateCalculations);
+            });
+            
+            // Modal functionality
+            const modal = document.getElementById('evaluationModal');
+            
+            function openModal() {
+                modal.classList.remove('hidden');
+            }
+            
+            function closeModal() {
+                modal.classList.add('hidden');
+            }
+            
+            // Add event listeners for modal triggers
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-modal="open"]')) {
+                    openModal();
+                }
+                if (e.target.closest('[data-modal="close"]') || e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Table sorting and filtering would be implemented here
+            // Chart rendering for KPI visualizations would be added
+            // Form validation and submission handling
+            
+            console.log('Supplier Evaluation System initialized');
+        })();
+    </script>
+</body>
+</html>
