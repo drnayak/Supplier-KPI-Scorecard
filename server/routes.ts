@@ -7,7 +7,12 @@ import {
   insertQuantityEvaluationSchema,
   insertDeliveryEvaluationSchema,
   insertQualityEvaluationSchema,
-  insertPpmEvaluationSchema
+  insertPpmEvaluationSchema,
+  insertPriceConfigurationSchema,
+  insertQuantityConfigurationSchema,
+  insertDeliveryConfigurationSchema,
+  insertQualityConfigurationSchema,
+  insertPpmConfigurationSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -53,7 +58,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const supplierId = req.query.supplierId as string | undefined;
       const evaluations = await storage.getPriceEvaluations(supplierId);
-      res.json(evaluations);
+      const suppliers = await storage.getSuppliers();
+      
+      const evaluationsWithSuppliers = evaluations.map(evaluation => {
+        const supplier = suppliers.find(s => s.id === evaluation.supplierId);
+        return {
+          ...evaluation,
+          supplier: supplier!,
+        };
+      });
+      
+      res.json(evaluationsWithSuppliers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch price evaluations" });
     }
@@ -78,7 +93,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const supplierId = req.query.supplierId as string | undefined;
       const evaluations = await storage.getQuantityEvaluations(supplierId);
-      res.json(evaluations);
+      const suppliers = await storage.getSuppliers();
+      
+      const evaluationsWithSuppliers = evaluations.map(evaluation => {
+        const supplier = suppliers.find(s => s.id === evaluation.supplierId);
+        return {
+          ...evaluation,
+          supplier: supplier!,
+        };
+      });
+      
+      res.json(evaluationsWithSuppliers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch quantity evaluations" });
     }
@@ -103,7 +128,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const supplierId = req.query.supplierId as string | undefined;
       const evaluations = await storage.getDeliveryEvaluations(supplierId);
-      res.json(evaluations);
+      const suppliers = await storage.getSuppliers();
+      
+      const evaluationsWithSuppliers = evaluations.map(evaluation => {
+        const supplier = suppliers.find(s => s.id === evaluation.supplierId);
+        return {
+          ...evaluation,
+          supplier: supplier!,
+        };
+      });
+      
+      res.json(evaluationsWithSuppliers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch delivery evaluations" });
     }
@@ -135,7 +170,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const supplierId = req.query.supplierId as string | undefined;
       const evaluations = await storage.getQualityEvaluations(supplierId);
-      res.json(evaluations);
+      const suppliers = await storage.getSuppliers();
+      
+      const evaluationsWithSuppliers = evaluations.map(evaluation => {
+        const supplier = suppliers.find(s => s.id === evaluation.supplierId);
+        return {
+          ...evaluation,
+          supplier: supplier!,
+        };
+      });
+      
+      res.json(evaluationsWithSuppliers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch quality evaluations" });
     }
@@ -160,7 +205,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const supplierId = req.query.supplierId as string | undefined;
       const evaluations = await storage.getPpmEvaluations(supplierId);
-      res.json(evaluations);
+      const suppliers = await storage.getSuppliers();
+      
+      const evaluationsWithSuppliers = evaluations.map(evaluation => {
+        const supplier = suppliers.find(s => s.id === evaluation.supplierId);
+        return {
+          ...evaluation,
+          supplier: supplier!,
+        };
+      });
+      
+      res.json(evaluationsWithSuppliers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch PPM evaluations" });
     }
@@ -249,6 +304,258 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(exportData);
     } catch (error) {
       res.status(500).json({ error: "Failed to export supplier data" });
+    }
+  });
+
+  // Configuration Management APIs
+
+  // Price Configurations
+  app.get("/api/configurations/price", async (req, res) => {
+    try {
+      const configs = await storage.getPriceConfigurations();
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch price configurations" });
+    }
+  });
+
+  app.get("/api/configurations/price/active", async (req, res) => {
+    try {
+      const config = await storage.getActivePriceConfiguration();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active price configuration" });
+    }
+  });
+
+  app.post("/api/configurations/price", async (req, res) => {
+    try {
+      const validation = insertPriceConfigurationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.createPriceConfiguration(validation.data);
+      res.status(201).json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create price configuration" });
+    }
+  });
+
+  app.put("/api/configurations/price/:id", async (req, res) => {
+    try {
+      const validation = insertPriceConfigurationSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.updatePriceConfiguration(req.params.id, validation.data);
+      if (!config) {
+        return res.status(404).json({ error: "Configuration not found" });
+      }
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update price configuration" });
+    }
+  });
+
+  // Quantity Configurations
+  app.get("/api/configurations/quantity", async (req, res) => {
+    try {
+      const configs = await storage.getQuantityConfigurations();
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch quantity configurations" });
+    }
+  });
+
+  app.get("/api/configurations/quantity/active", async (req, res) => {
+    try {
+      const config = await storage.getActiveQuantityConfiguration();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active quantity configuration" });
+    }
+  });
+
+  app.post("/api/configurations/quantity", async (req, res) => {
+    try {
+      const validation = insertQuantityConfigurationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.createQuantityConfiguration(validation.data);
+      res.status(201).json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create quantity configuration" });
+    }
+  });
+
+  app.put("/api/configurations/quantity/:id", async (req, res) => {
+    try {
+      const validation = insertQuantityConfigurationSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.updateQuantityConfiguration(req.params.id, validation.data);
+      if (!config) {
+        return res.status(404).json({ error: "Configuration not found" });
+      }
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update quantity configuration" });
+    }
+  });
+
+  // Delivery Configurations
+  app.get("/api/configurations/delivery", async (req, res) => {
+    try {
+      const configs = await storage.getDeliveryConfigurations();
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch delivery configurations" });
+    }
+  });
+
+  app.get("/api/configurations/delivery/active", async (req, res) => {
+    try {
+      const config = await storage.getActiveDeliveryConfiguration();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active delivery configuration" });
+    }
+  });
+
+  app.post("/api/configurations/delivery", async (req, res) => {
+    try {
+      const validation = insertDeliveryConfigurationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.createDeliveryConfiguration(validation.data);
+      res.status(201).json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create delivery configuration" });
+    }
+  });
+
+  app.put("/api/configurations/delivery/:id", async (req, res) => {
+    try {
+      const validation = insertDeliveryConfigurationSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.updateDeliveryConfiguration(req.params.id, validation.data);
+      if (!config) {
+        return res.status(404).json({ error: "Configuration not found" });
+      }
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update delivery configuration" });
+    }
+  });
+
+  // Quality Configurations
+  app.get("/api/configurations/quality", async (req, res) => {
+    try {
+      const configs = await storage.getQualityConfigurations();
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch quality configurations" });
+    }
+  });
+
+  app.get("/api/configurations/quality/active", async (req, res) => {
+    try {
+      const config = await storage.getActiveQualityConfiguration();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active quality configuration" });
+    }
+  });
+
+  app.post("/api/configurations/quality", async (req, res) => {
+    try {
+      const validation = insertQualityConfigurationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.createQualityConfiguration(validation.data);
+      res.status(201).json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create quality configuration" });
+    }
+  });
+
+  app.put("/api/configurations/quality/:id", async (req, res) => {
+    try {
+      const validation = insertQualityConfigurationSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.updateQualityConfiguration(req.params.id, validation.data);
+      if (!config) {
+        return res.status(404).json({ error: "Configuration not found" });
+      }
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update quality configuration" });
+    }
+  });
+
+  // PPM Configurations
+  app.get("/api/configurations/ppm", async (req, res) => {
+    try {
+      const configs = await storage.getPpmConfigurations();
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch PPM configurations" });
+    }
+  });
+
+  app.get("/api/configurations/ppm/active", async (req, res) => {
+    try {
+      const config = await storage.getActivePpmConfiguration();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active PPM configuration" });
+    }
+  });
+
+  app.post("/api/configurations/ppm", async (req, res) => {
+    try {
+      const validation = insertPpmConfigurationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.createPpmConfiguration(validation.data);
+      res.status(201).json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create PPM configuration" });
+    }
+  });
+
+  app.put("/api/configurations/ppm/:id", async (req, res) => {
+    try {
+      const validation = insertPpmConfigurationSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid configuration data", details: validation.error.errors });
+      }
+      
+      const config = await storage.updatePpmConfiguration(req.params.id, validation.data);
+      if (!config) {
+        return res.status(404).json({ error: "Configuration not found" });
+      }
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update PPM configuration" });
     }
   });
 

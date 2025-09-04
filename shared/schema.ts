@@ -88,6 +88,81 @@ export const supplierKpis = pgTable("supplier_kpis", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
+// Configuration tables for scoring parameters
+export const priceConfigurations = pgTable("price_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default("Default"),
+  description: text("description"),
+  // Price variance scoring bands (SAP style)
+  excellentThreshold: real("excellent_threshold").notNull().default(-5), // -5% or better = 100 points
+  goodThreshold: real("good_threshold").notNull().default(-2), // -2% to -5% = 80 points  
+  acceptableThreshold: real("acceptable_threshold").notNull().default(2), // -2% to +2% = 70 points
+  penaltyRate: real("penalty_rate").notNull().default(10), // Points deducted per % overage
+  minimumScore: integer("minimum_score").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const quantityConfigurations = pgTable("quantity_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default("Default"),
+  description: text("description"),
+  // Quantity variance scoring (SAP style - penalize shortfalls)
+  perfectDeliveryScore: integer("perfect_delivery_score").notNull().default(100), // 0% variance = 100 points
+  shortfallPenaltyRate: real("shortfall_penalty_rate").notNull().default(5), // Points deducted per % shortfall
+  overdeliveryPenaltyRate: real("overdelivery_penalty_rate").notNull().default(2), // Points deducted per % overdelivery
+  minimumScore: integer("minimum_score").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const deliveryConfigurations = pgTable("delivery_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default("Default"),
+  description: text("description"),
+  // Delivery time scoring (SAP style)
+  onTimeScore: integer("on_time_score").notNull().default(100), // On-time or early = 100 points
+  penaltyPerDay: integer("penalty_per_day").notNull().default(5), // Points deducted per overdue day
+  maxOverdueDays: integer("max_overdue_days").notNull().default(20), // Maximum tracked overdue days
+  minimumScore: integer("minimum_score").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const qualityConfigurations = pgTable("quality_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default("Default"),
+  description: text("description"),
+  // Quality evaluation scoring (SAP style)
+  baseScore: integer("base_score").notNull().default(100), // Starting score
+  notificationPenalty: integer("notification_penalty").notNull().default(10), // Points deducted per notification
+  inspectionOkBonus: integer("inspection_ok_bonus").notNull().default(0), // Bonus for OK inspection
+  inspectionNotOkPenalty: integer("inspection_not_ok_penalty").notNull().default(20), // Additional penalty for NOT_OK
+  minimumScore: integer("minimum_score").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const ppmConfigurations = pgTable("ppm_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().default("Default"),
+  description: text("description"),
+  // PPM evaluation ranges (SAP style)
+  zeroDefectsLabel: text("zero_defects_label").notNull().default("Zero Defects"),
+  excellentThreshold: integer("excellent_threshold").notNull().default(1000), // < 1000 PPM = Excellent
+  excellentLabel: text("excellent_label").notNull().default("Excellent"),
+  goodThreshold: integer("good_threshold").notNull().default(10000), // < 10000 PPM = Good
+  goodLabel: text("good_label").notNull().default("Good"),
+  improvementLabel: text("improvement_label").notNull().default("Needs Improvement"), // >= 10000 PPM
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertSupplierSchema = createInsertSchema(suppliers).omit({
   id: true,
@@ -131,6 +206,36 @@ export const insertPpmEvaluationSchema = createInsertSchema(ppmEvaluations).omit
   ppmValue: true,
 });
 
+export const insertPriceConfigurationSchema = createInsertSchema(priceConfigurations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuantityConfigurationSchema = createInsertSchema(quantityConfigurations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDeliveryConfigurationSchema = createInsertSchema(deliveryConfigurations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQualityConfigurationSchema = createInsertSchema(qualityConfigurations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPpmConfigurationSchema = createInsertSchema(ppmConfigurations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type Supplier = typeof suppliers.$inferSelect;
 export type InsertSupplier = z.infer<typeof insertSupplierSchema>;
@@ -145,3 +250,15 @@ export type InsertQualityEvaluation = z.infer<typeof insertQualityEvaluationSche
 export type PpmEvaluation = typeof ppmEvaluations.$inferSelect;
 export type InsertPpmEvaluation = z.infer<typeof insertPpmEvaluationSchema>;
 export type SupplierKpi = typeof supplierKpis.$inferSelect;
+
+// Configuration types
+export type PriceConfiguration = typeof priceConfigurations.$inferSelect;
+export type InsertPriceConfiguration = z.infer<typeof insertPriceConfigurationSchema>;
+export type QuantityConfiguration = typeof quantityConfigurations.$inferSelect;
+export type InsertQuantityConfiguration = z.infer<typeof insertQuantityConfigurationSchema>;
+export type DeliveryConfiguration = typeof deliveryConfigurations.$inferSelect;
+export type InsertDeliveryConfiguration = z.infer<typeof insertDeliveryConfigurationSchema>;
+export type QualityConfiguration = typeof qualityConfigurations.$inferSelect;
+export type InsertQualityConfiguration = z.infer<typeof insertQualityConfigurationSchema>;
+export type PpmConfiguration = typeof ppmConfigurations.$inferSelect;
+export type InsertPpmConfiguration = z.infer<typeof insertPpmConfigurationSchema>;

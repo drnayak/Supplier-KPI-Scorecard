@@ -11,7 +11,17 @@ import {
   type InsertQualityEvaluation,
   type PpmEvaluation,
   type InsertPpmEvaluation,
-  type SupplierKpi
+  type SupplierKpi,
+  type PriceConfiguration,
+  type InsertPriceConfiguration,
+  type QuantityConfiguration,
+  type InsertQuantityConfiguration,
+  type DeliveryConfiguration,
+  type InsertDeliveryConfiguration,
+  type QualityConfiguration,
+  type InsertQualityConfiguration,
+  type PpmConfiguration,
+  type InsertPpmConfiguration
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -46,6 +56,37 @@ export interface IStorage {
   getSupplierKpis(): Promise<SupplierKpi[]>;
   getSupplierKpi(supplierId: string): Promise<SupplierKpi | undefined>;
   updateSupplierKpi(supplierId: string, kpi: Partial<SupplierKpi>): Promise<SupplierKpi>;
+
+  // Configuration Management
+  // Price Configurations
+  getPriceConfigurations(): Promise<PriceConfiguration[]>;
+  getActivePriceConfiguration(): Promise<PriceConfiguration | undefined>;
+  createPriceConfiguration(config: InsertPriceConfiguration): Promise<PriceConfiguration>;
+  updatePriceConfiguration(id: string, config: Partial<InsertPriceConfiguration>): Promise<PriceConfiguration | undefined>;
+
+  // Quantity Configurations
+  getQuantityConfigurations(): Promise<QuantityConfiguration[]>;
+  getActiveQuantityConfiguration(): Promise<QuantityConfiguration | undefined>;
+  createQuantityConfiguration(config: InsertQuantityConfiguration): Promise<QuantityConfiguration>;
+  updateQuantityConfiguration(id: string, config: Partial<InsertQuantityConfiguration>): Promise<QuantityConfiguration | undefined>;
+
+  // Delivery Configurations
+  getDeliveryConfigurations(): Promise<DeliveryConfiguration[]>;
+  getActiveDeliveryConfiguration(): Promise<DeliveryConfiguration | undefined>;
+  createDeliveryConfiguration(config: InsertDeliveryConfiguration): Promise<DeliveryConfiguration>;
+  updateDeliveryConfiguration(id: string, config: Partial<InsertDeliveryConfiguration>): Promise<DeliveryConfiguration | undefined>;
+
+  // Quality Configurations
+  getQualityConfigurations(): Promise<QualityConfiguration[]>;
+  getActiveQualityConfiguration(): Promise<QualityConfiguration | undefined>;
+  createQualityConfiguration(config: InsertQualityConfiguration): Promise<QualityConfiguration>;
+  updateQualityConfiguration(id: string, config: Partial<InsertQualityConfiguration>): Promise<QualityConfiguration | undefined>;
+
+  // PPM Configurations
+  getPpmConfigurations(): Promise<PpmConfiguration[]>;
+  getActivePpmConfiguration(): Promise<PpmConfiguration | undefined>;
+  createPpmConfiguration(config: InsertPpmConfiguration): Promise<PpmConfiguration>;
+  updatePpmConfiguration(id: string, config: Partial<InsertPpmConfiguration>): Promise<PpmConfiguration | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -56,6 +97,13 @@ export class MemStorage implements IStorage {
   private qualityEvaluations: Map<string, QualityEvaluation> = new Map();
   private ppmEvaluations: Map<string, PpmEvaluation> = new Map();
   private supplierKpis: Map<string, SupplierKpi> = new Map();
+  
+  // Configuration storage
+  private priceConfigurations: Map<string, PriceConfiguration> = new Map();
+  private quantityConfigurations: Map<string, QuantityConfiguration> = new Map();
+  private deliveryConfigurations: Map<string, DeliveryConfiguration> = new Map();
+  private qualityConfigurations: Map<string, QualityConfiguration> = new Map();
+  private ppmConfigurations: Map<string, PpmConfiguration> = new Map();
 
   constructor() {
     // Initialize with some sample suppliers
@@ -96,6 +144,95 @@ export class MemStorage implements IStorage {
       };
       this.supplierKpis.set(id, kpi);
     }
+
+    // Initialize default configurations
+    this.initializeDefaultConfigurations();
+  }
+
+  private initializeDefaultConfigurations() {
+    // Default Price Configuration
+    const priceConfigId = randomUUID();
+    const defaultPriceConfig: PriceConfiguration = {
+      id: priceConfigId,
+      name: "SAP S4HANA Default",
+      description: "Standard SAP price variance scoring configuration",
+      excellentThreshold: -5,
+      goodThreshold: -2,
+      acceptableThreshold: 2,
+      penaltyRate: 10,
+      minimumScore: 0,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.priceConfigurations.set(priceConfigId, defaultPriceConfig);
+
+    // Default Quantity Configuration
+    const quantityConfigId = randomUUID();
+    const defaultQuantityConfig: QuantityConfiguration = {
+      id: quantityConfigId,
+      name: "SAP S4HANA Default",
+      description: "Standard SAP quantity variance scoring configuration",
+      perfectDeliveryScore: 100,
+      shortfallPenaltyRate: 5,
+      overdeliveryPenaltyRate: 2,
+      minimumScore: 0,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.quantityConfigurations.set(quantityConfigId, defaultQuantityConfig);
+
+    // Default Delivery Configuration
+    const deliveryConfigId = randomUUID();
+    const defaultDeliveryConfig: DeliveryConfiguration = {
+      id: deliveryConfigId,
+      name: "SAP S4HANA Default",
+      description: "Standard SAP delivery time scoring configuration",
+      onTimeScore: 100,
+      penaltyPerDay: 5,
+      maxOverdueDays: 20,
+      minimumScore: 0,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.deliveryConfigurations.set(deliveryConfigId, defaultDeliveryConfig);
+
+    // Default Quality Configuration
+    const qualityConfigId = randomUUID();
+    const defaultQualityConfig: QualityConfiguration = {
+      id: qualityConfigId,
+      name: "SAP S4HANA Default",
+      description: "Standard SAP quality evaluation scoring configuration",
+      baseScore: 100,
+      notificationPenalty: 10,
+      inspectionOkBonus: 0,
+      inspectionNotOkPenalty: 20,
+      minimumScore: 0,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.qualityConfigurations.set(qualityConfigId, defaultQualityConfig);
+
+    // Default PPM Configuration
+    const ppmConfigId = randomUUID();
+    const defaultPpmConfig: PpmConfiguration = {
+      id: ppmConfigId,
+      name: "SAP S4HANA Default",
+      description: "Standard SAP PPM evaluation configuration",
+      zeroDefectsLabel: "Zero Defects",
+      excellentThreshold: 1000,
+      excellentLabel: "Excellent",
+      goodThreshold: 10000,
+      goodLabel: "Good",
+      improvementLabel: "Needs Improvement",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.ppmConfigurations.set(ppmConfigId, defaultPpmConfig);
   }
 
   // Suppliers
@@ -393,6 +530,212 @@ export class MemStorage implements IStorage {
       evaluationCount,
       lastUpdated: new Date(),
     });
+  }
+
+  // Configuration Methods
+
+  // Price Configurations
+  async getPriceConfigurations(): Promise<PriceConfiguration[]> {
+    return Array.from(this.priceConfigurations.values());
+  }
+
+  async getActivePriceConfiguration(): Promise<PriceConfiguration | undefined> {
+    return Array.from(this.priceConfigurations.values()).find(config => config.isActive);
+  }
+
+  async createPriceConfiguration(config: InsertPriceConfiguration): Promise<PriceConfiguration> {
+    const id = randomUUID();
+    const priceConfig: PriceConfiguration = {
+      id,
+      name: config.name || "Default",
+      description: config.description || null,
+      excellentThreshold: config.excellentThreshold ?? -5,
+      goodThreshold: config.goodThreshold ?? -2,
+      acceptableThreshold: config.acceptableThreshold ?? 2,
+      penaltyRate: config.penaltyRate ?? 10,
+      minimumScore: config.minimumScore ?? 0,
+      isActive: config.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.priceConfigurations.set(id, priceConfig);
+    return priceConfig;
+  }
+
+  async updatePriceConfiguration(id: string, config: Partial<InsertPriceConfiguration>): Promise<PriceConfiguration | undefined> {
+    const existing = this.priceConfigurations.get(id);
+    if (!existing) return undefined;
+    
+    const updated: PriceConfiguration = {
+      ...existing,
+      ...config,
+      updatedAt: new Date(),
+    };
+    this.priceConfigurations.set(id, updated);
+    return updated;
+  }
+
+  // Quantity Configurations
+  async getQuantityConfigurations(): Promise<QuantityConfiguration[]> {
+    return Array.from(this.quantityConfigurations.values());
+  }
+
+  async getActiveQuantityConfiguration(): Promise<QuantityConfiguration | undefined> {
+    return Array.from(this.quantityConfigurations.values()).find(config => config.isActive);
+  }
+
+  async createQuantityConfiguration(config: InsertQuantityConfiguration): Promise<QuantityConfiguration> {
+    const id = randomUUID();
+    const quantityConfig: QuantityConfiguration = {
+      id,
+      name: config.name || "Default",
+      description: config.description || null,
+      perfectDeliveryScore: config.perfectDeliveryScore ?? 100,
+      shortfallPenaltyRate: config.shortfallPenaltyRate ?? 5,
+      overdeliveryPenaltyRate: config.overdeliveryPenaltyRate ?? 2,
+      minimumScore: config.minimumScore ?? 0,
+      isActive: config.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.quantityConfigurations.set(id, quantityConfig);
+    return quantityConfig;
+  }
+
+  async updateQuantityConfiguration(id: string, config: Partial<InsertQuantityConfiguration>): Promise<QuantityConfiguration | undefined> {
+    const existing = this.quantityConfigurations.get(id);
+    if (!existing) return undefined;
+    
+    const updated: QuantityConfiguration = {
+      ...existing,
+      ...config,
+      updatedAt: new Date(),
+    };
+    this.quantityConfigurations.set(id, updated);
+    return updated;
+  }
+
+  // Delivery Configurations
+  async getDeliveryConfigurations(): Promise<DeliveryConfiguration[]> {
+    return Array.from(this.deliveryConfigurations.values());
+  }
+
+  async getActiveDeliveryConfiguration(): Promise<DeliveryConfiguration | undefined> {
+    return Array.from(this.deliveryConfigurations.values()).find(config => config.isActive);
+  }
+
+  async createDeliveryConfiguration(config: InsertDeliveryConfiguration): Promise<DeliveryConfiguration> {
+    const id = randomUUID();
+    const deliveryConfig: DeliveryConfiguration = {
+      id,
+      name: config.name || "Default",
+      description: config.description || null,
+      onTimeScore: config.onTimeScore ?? 100,
+      penaltyPerDay: config.penaltyPerDay ?? 5,
+      maxOverdueDays: config.maxOverdueDays ?? 20,
+      minimumScore: config.minimumScore ?? 0,
+      isActive: config.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.deliveryConfigurations.set(id, deliveryConfig);
+    return deliveryConfig;
+  }
+
+  async updateDeliveryConfiguration(id: string, config: Partial<InsertDeliveryConfiguration>): Promise<DeliveryConfiguration | undefined> {
+    const existing = this.deliveryConfigurations.get(id);
+    if (!existing) return undefined;
+    
+    const updated: DeliveryConfiguration = {
+      ...existing,
+      ...config,
+      updatedAt: new Date(),
+    };
+    this.deliveryConfigurations.set(id, updated);
+    return updated;
+  }
+
+  // Quality Configurations
+  async getQualityConfigurations(): Promise<QualityConfiguration[]> {
+    return Array.from(this.qualityConfigurations.values());
+  }
+
+  async getActiveQualityConfiguration(): Promise<QualityConfiguration | undefined> {
+    return Array.from(this.qualityConfigurations.values()).find(config => config.isActive);
+  }
+
+  async createQualityConfiguration(config: InsertQualityConfiguration): Promise<QualityConfiguration> {
+    const id = randomUUID();
+    const qualityConfig: QualityConfiguration = {
+      id,
+      name: config.name || "Default",
+      description: config.description || null,
+      baseScore: config.baseScore ?? 100,
+      notificationPenalty: config.notificationPenalty ?? 10,
+      inspectionOkBonus: config.inspectionOkBonus ?? 0,
+      inspectionNotOkPenalty: config.inspectionNotOkPenalty ?? 20,
+      minimumScore: config.minimumScore ?? 0,
+      isActive: config.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.qualityConfigurations.set(id, qualityConfig);
+    return qualityConfig;
+  }
+
+  async updateQualityConfiguration(id: string, config: Partial<InsertQualityConfiguration>): Promise<QualityConfiguration | undefined> {
+    const existing = this.qualityConfigurations.get(id);
+    if (!existing) return undefined;
+    
+    const updated: QualityConfiguration = {
+      ...existing,
+      ...config,
+      updatedAt: new Date(),
+    };
+    this.qualityConfigurations.set(id, updated);
+    return updated;
+  }
+
+  // PPM Configurations
+  async getPpmConfigurations(): Promise<PpmConfiguration[]> {
+    return Array.from(this.ppmConfigurations.values());
+  }
+
+  async getActivePpmConfiguration(): Promise<PpmConfiguration | undefined> {
+    return Array.from(this.ppmConfigurations.values()).find(config => config.isActive);
+  }
+
+  async createPpmConfiguration(config: InsertPpmConfiguration): Promise<PpmConfiguration> {
+    const id = randomUUID();
+    const ppmConfig: PpmConfiguration = {
+      id,
+      name: config.name || "Default",
+      description: config.description || null,
+      zeroDefectsLabel: config.zeroDefectsLabel || "Zero Defects",
+      excellentThreshold: config.excellentThreshold ?? 1000,
+      excellentLabel: config.excellentLabel || "Excellent",
+      goodThreshold: config.goodThreshold ?? 10000,
+      goodLabel: config.goodLabel || "Good",
+      improvementLabel: config.improvementLabel || "Needs Improvement",
+      isActive: config.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.ppmConfigurations.set(id, ppmConfig);
+    return ppmConfig;
+  }
+
+  async updatePpmConfiguration(id: string, config: Partial<InsertPpmConfiguration>): Promise<PpmConfiguration | undefined> {
+    const existing = this.ppmConfigurations.get(id);
+    if (!existing) return undefined;
+    
+    const updated: PpmConfiguration = {
+      ...existing,
+      ...config,
+      updatedAt: new Date(),
+    };
+    this.ppmConfigurations.set(id, updated);
+    return updated;
   }
 }
 
